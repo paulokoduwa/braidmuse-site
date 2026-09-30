@@ -3,24 +3,176 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Braid Muse</title>
+<title>Braid Muse — AI Hairstyle Try On for Braids</title>
+<meta name="description" content="See braids on you before you book. Braid Muse is an AI hairstyle try-on for iPhone: preview box braids, knotless, Fulani, locs and twists on your own photo.">
+<meta name="apple-itunes-app" content="app-id=6816102145">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Braid Muse — See braids on you before you book">
+<meta property="og:description" content="AI hairstyle try-on for braids, locs and twists. Preview your next style on your own photo, then take it to your braider.">
+<meta property="og:url" content="https://paulokoduwa.github.io/braidmuse-site/">
+<meta property="og:image" content="https://paulokoduwa.github.io/braidmuse-site/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/icon.png">
+<link rel="apple-touch-icon" href="img/icon.png">
 <style>
-  :root { color-scheme: light dark; }
-  body { margin:0 auto; padding:40px 22px 80px; max-width:44rem;
-         font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
-         color:#2b2320; background:#faf6ef; }
-  @media (prefers-color-scheme: dark){ body{ color:#ece6de; background:#1a1614; } a{ color:#f08a6c; } }
-  h1 { font-size:1.9rem; margin:0 0 .2em; letter-spacing:-.01em; }
-  h2 { font-size:1.05rem; margin:2.2em 0 .5em; text-transform:uppercase; letter-spacing:.08em; }
-  .sub { color:#7a6f69; margin:0 0 2.5em; }
-  @media (prefers-color-scheme: dark){ .sub{ color:#a89d95; } }
-  ul { padding-left:1.2em; } li { margin:.35em 0; }
-  a { color:#b8452a; }
+  :root {
+    --cream:#faf5eb; --sand:#ede3d1; --sage:#e0e6d4; --ink:#332924; --muted:#7d7066; --coral:#d44730; --card:#fffdf8;
+    --serif: ui-serif, "New York", Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
+    color-scheme: light;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--cream); color:var(--ink); font:17px/1.6 var(--sans); -webkit-font-smoothing:antialiased; }
+  a { color:var(--coral); }
+  .wrap { max-width:1120px; margin:0 auto; padding:0 22px; }
+  header { display:flex; align-items:center; justify-content:space-between; padding:22px 0; }
+  .brand { display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink); }
+  .brand img { width:42px; height:42px; border-radius:10px; }
+  .brand span { font:28px var(--serif); white-space:nowrap; } .brand em { font-style:italic; }
+  nav a { color:var(--ink); text-decoration:none; margin-left:22px; font-size:15px; }
+  nav a:hover { color:var(--coral); }
+  .eyebrow { font-size:12px; font-weight:600; letter-spacing:.22em; text-transform:uppercase; color:var(--coral); }
+  .hero { display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center; padding:36px 0 72px; }
+  h1 { font:400 clamp(44px,6vw,72px)/1.02 var(--serif); margin:14px 0 20px; letter-spacing:-.01em; }
+  h1 em { font-style:italic; }
+  .lede { font-size:19px; color:var(--muted); max-width:34rem; margin:0 0 30px; }
+  .cta { display:inline-flex; align-items:center; gap:12px; background:var(--ink); color:#fff; text-decoration:none; padding:15px 26px; border-radius:999px; font-weight:600; }
+  .cta svg { width:20px; height:20px; fill:#fff; }
+  .note { font-size:14px; color:var(--muted); margin-top:14px; }
+  .compare { position:relative; aspect-ratio:2/3; border-radius:28px; overflow:hidden; box-shadow:0 30px 60px -30px rgba(51,41,36,.45); background:var(--sand); }
+  .compare img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; user-select:none; -webkit-user-drag:none; }
+  .compare .before { clip-path: inset(0 calc(100% - var(--pos, 50%)) 0 0); }
+  .compare .line { position:absolute; top:0; bottom:0; left:var(--pos, 50%); width:2px; background:#fff; transform:translateX(-1px); pointer-events:none; }
+  .compare .knob { position:absolute; top:50%; left:var(--pos, 50%); width:48px; height:48px; margin:-24px 0 0 -24px; border-radius:50%; background:#fff; box-shadow:0 6px 18px rgba(0,0,0,.2); display:grid; place-items:center; pointer-events:none; font-size:18px; color:var(--ink); }
+  .compare input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:ew-resize; margin:0; }
+  .tag { position:absolute; bottom:16px; font-size:10px; font-weight:700; letter-spacing:.14em; color:#fff; background:rgba(0,0,0,.42); padding:8px 12px; border-radius:999px; pointer-events:none; }
+  .tag.l { left:16px; } .tag.r { right:16px; }
+  section { padding:72px 0; }
+  h2 { font:400 clamp(32px,4vw,46px)/1.1 var(--serif); margin:10px 0 16px; }
+  .sub { color:var(--muted); max-width:40rem; margin:0; }
+  .gallery { display:flex; gap:18px; overflow-x:auto; padding:34px 22px 12px; margin:0 -22px; scroll-snap-type:x mandatory; }
+  .gallery img { height:520px; width:auto; border-radius:22px; scroll-snap-align:start; flex:none; box-shadow:0 18px 36px -24px rgba(51,41,36,.5); }
+  .features { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; margin-top:36px; }
+  .feature { background:var(--card); border:1px solid var(--sand); border-radius:22px; padding:26px; }
+  .feature h3 { font:400 23px/1.25 var(--serif); margin:0 0 8px; }
+  .feature p { margin:0; color:var(--muted); font-size:16px; }
+  .styles { display:flex; flex-wrap:wrap; gap:10px; margin-top:28px; }
+  .styles span { border:1px solid rgba(51,41,36,.16); border-radius:999px; padding:9px 16px; font-size:15px; background:var(--card); }
+  .plus { background:var(--ink); color:#fff; border-radius:30px; padding:48px; display:grid; grid-template-columns:1.1fr .9fr; gap:40px; align-items:center; }
+  .plus .eyebrow { color:#f3a38f; }
+  .plus h2 { color:#fff; }
+  .plus ul { list-style:none; padding:0; margin:0; }
+  .plus li { padding:12px 0; border-bottom:1px solid rgba(255,255,255,.14); }
+  .plus li:last-child { border-bottom:0; }
+  .plus small { display:block; color:rgba(255,255,255,.7); margin-top:18px; font-size:13px; line-height:1.5; }
+  .disclaimer { background:var(--sage); border-radius:22px; padding:24px 28px; color:var(--ink); font-size:15px; }
+  footer { border-top:1px solid var(--sand); padding:34px 0 50px; color:var(--muted); font-size:14px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:14px; }
+  footer a { color:var(--ink); margin-right:18px; }
+  @media (max-width:860px) {
+    .hero, .plus { grid-template-columns:1fr; }
+    .hero { gap:36px; padding-top:12px; }
+    .features { grid-template-columns:1fr; }
+    .gallery img { height:420px; }
+    .plus { padding:32px 24px; }
+    nav a { margin-left:14px; }
+  }
 </style>
 </head>
 <body>
-<h1>Braid Muse</h1>
-<p class="sub">AI braid try-on for iPhone</p>
-<p><a href="support.html">Support</a> · <a href="privacy.html">Privacy Policy</a></p>
+<div class="wrap">
+  <header>
+    <a class="brand" href="./"><img src="img/icon.png" alt=""><span>braid <em>muse</em></span></a>
+    <nav><a href="support.html">Support</a><a href="privacy.html">Privacy</a></nav>
+  </header>
+
+  <div class="hero">
+    <div>
+      <div class="eyebrow">AI braid try-on for iPhone</div>
+      <h1>See braids on <em>you</em> before you book.</h1>
+      <p class="lede">Add one photo, pick a style, and see a realistic preview of yourself in box braids, knotless, Fulani braids, twists or locs. Then take it to your braider.</p>
+      <a class="cta" href="https://apps.apple.com/app/id6816102145"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.9-.9-3.1-.8-1.6 0-3.1.9-3.9 2.4-1.7 2.9-.4 7.2 1.2 9.6.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.1-.8 1.5 0 1.9.8 3.1.8 1.3 0 2.1-1.2 2.9-2.3.9-1.3 1.3-2.6 1.3-2.7 0 0-2.7-1-2.7-4.2zM14.1 5.8c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2.1-.5 2.7-1.3z"/></svg>Download on the App Store</a>
+      <p class="note">Your first look is included. For iPhone.</p>
+    </div>
+    <div class="compare" id="compare" style="--pos:50%">
+      <img src="img/after.jpg" alt="The same woman with boho knotless braids, created by Braid Muse">
+      <img class="before" src="img/before.jpg" alt="A woman with natural hair, before the try-on">
+      <div class="line"></div><div class="knob" aria-hidden="true">&#8596;</div>
+      <span class="tag l">BEFORE</span><span class="tag r">AI PREVIEW</span>
+      <input type="range" min="0" max="100" value="50" aria-label="Slide to compare before and after">
+    </div>
+  </div>
+</div>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="eyebrow">Inside the app</div>
+    <h2>Your personal braid studio.</h2>
+    <div class="gallery">
+      <img src="img/screen-1.jpg" alt="See braids on you before you book: before and after slider" loading="lazy">
+      <img src="img/screen-2.jpg" alt="AI hairstyle try on for braids: a stitch braids preview" loading="lazy">
+      <img src="img/screen-3.jpg" alt="Knotless, locs, twists and more: the style gallery" loading="lazy">
+      <img src="img/screen-4.jpg" alt="Pick your length, size and color" loading="lazy">
+      <img src="img/screen-5.jpg" alt="A style note made for your face" loading="lazy">
+      <img src="img/screen-6.jpg" alt="Know how long each style takes" loading="lazy">
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Why Braid Muse</div>
+    <h2>Less guessing. More you.</h2>
+    <p class="sub">Braids are a commitment of hours and money. See the look on your own face first.</p>
+    <div class="features">
+      <div class="feature"><h3>Try on 12 styles</h3><p>Knotless, cornrows, twists and locs, and short styles, each with its own realistic preview.</p></div>
+      <div class="feature"><h3>Make it yours</h3><p>Choose the length, the braid size and the color: natural black, espresso, honey brown or burgundy.</p></div>
+      <div class="feature"><h3>Before and after</h3><p>Slide between your original photo and your AI preview to see the change side by side.</p></div>
+      <div class="feature"><h3>A style note for your face</h3><p>A short note on how parting, braid size and length can frame your features, plus a gentle care tip.</p></div>
+      <div class="feature"><h3>Know before you go</h3><p>Typical appointment time and care notes for every style, so you can plan your install.</p></div>
+      <div class="feature"><h3>Private by design</h3><p>Your photo is sent for processing only when you ask for a look. Saved looks stay on your iPhone.</p></div>
+    </div>
+    <div class="styles" aria-label="Styles in the app">
+      <span>Boho knotless</span><span>Jumbo knotless</span><span>French curl braids</span><span>Fulani braids</span><span>Lemonade braids</span><span>Stitch braids</span><span>Goddess braids</span><span>Passion twists</span><span>Goddess locs</span><span>Butterfly locs</span><span>The braided bob</span><span>Boho bob</span>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="plus">
+      <div>
+        <div class="eyebrow">Braid Muse Plus</div>
+        <h2>More looks. More possibility.</h2>
+        <p style="color:rgba(255,255,255,.8);margin:0">Your first look is included. Plus opens the whole studio.</p>
+      </div>
+      <div>
+        <ul>
+          <li>Up to 20 AI braid previews a day</li>
+          <li>Face-framing style suggestions</li>
+          <li>Your own collection of custom looks</li>
+        </ul>
+        <small>Monthly and yearly plans. Payment is charged to your Apple Account at confirmation. Subscriptions renew automatically unless cancelled at least 24 hours before the end of the current period. Manage or cancel any time in your Apple Account settings.</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <p class="disclaimer">AI previews are inspiration, not a guaranteed salon result. Your final style depends on your hair, your braider's technique and your extensions.</p>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <div><a href="support.html">Support</a><a href="privacy.html">Privacy Policy</a><a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Terms of Use</a><a href="mailto:paulnocode@gmail.com">Contact</a></div>
+    <div>© 2026 Braid Muse. iPhone and App Store are trademarks of Apple Inc.</div>
+  </footer>
+</div>
+
+<script>
+  const box = document.getElementById('compare');
+  box.querySelector('input').addEventListener('input', e => box.style.setProperty('--pos', e.target.value + '%'));
+</script>
 </body>
 </html>
